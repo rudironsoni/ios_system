@@ -97,3 +97,39 @@ extern const char* ios_getBookmarkedVersion(const char* p);
 extern void ios_stopInteractive(void);
 extern void finishedPreparingWebAssemblyCommand(void);
 extern int webAssemblyCommandOrder(void);
+
+// ============================================================================
+// TRACE HOOKS (M1-I1: Structured tracing for debugging)
+// ============================================================================
+
+typedef enum {
+    ASHELL_TRACE_NONE = 0,
+    ASHELL_TRACE_ERROR,
+    ASHELL_TRACE_WARN,
+    ASHELL_TRACE_INFO,
+    ASHELL_TRACE_DEBUG
+} ashell_trace_level_t;
+
+// Set global trace level
+extern void ashell_set_trace_level(ashell_trace_level_t level);
+extern ashell_trace_level_t ashell_get_trace_level(void);
+
+// Trace with format string
+extern void ashell_trace(ashell_trace_level_t level, const char* fmt, ...);
+
+// Specialized trace hooks
+extern void ashell_trace_command_start(const char* cmd, pid_t pid);
+extern void ashell_trace_command_end(const char* cmd, pid_t pid, int status);
+extern void ashell_trace_session_switch(const void* from_session, const void* to_session);
+extern void ashell_trace_io_operation(const char* op, size_t bytes);
+extern void ashell_trace_error(const char* context, const char* error);
+
+// Enable/disable trace categories
+extern void ashell_trace_enable_category(const char* category);
+extern void ashell_trace_disable_category(const char* category);
+
+// Trace categories
+#define ASHELL_TRACE_CAT_COMMANDS   "commands"
+#define ASHELL_TRACE_CAT_SESSIONS   "sessions"
+#define ASHELL_TRACE_CAT_IO         "io"
+#define ASHELL_TRACE_CAT_ENV        "environment"
