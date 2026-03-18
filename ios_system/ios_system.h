@@ -236,3 +236,37 @@ extern void ashell_clear_dynamic_commands(void);
 
 // Get registry statistics
 extern void ashell_get_registry_stats(ashell_registry_stats_t* stats);
+
+// ============================================================================
+// SESSION MANAGEMENT (M1-I4: Thread-safe session management)
+// ============================================================================
+
+// Session statistics structure
+typedef struct {
+    int max_sessions;             // Maximum concurrent sessions
+    int active_sessions;          // Currently active sessions
+    int total_ref_count;          // Sum of all reference counts
+    time_t oldest_session_age;    // Age of oldest session in seconds
+} ashell_session_stats_t;
+
+// Session lifecycle
+extern int ashell_session_register(const void* session_id, void* session_params);
+extern int ashell_session_unregister(const void* session_id);
+extern bool ashell_session_exists(const void* session_id);
+
+// Reference counting for safe access
+extern int ashell_session_acquire(const void* session_id);
+extern int ashell_session_release(const void* session_id);
+
+// Session access
+extern void* ashell_session_get(const void* session_id);
+extern void ashell_session_touch(const void* session_id);
+
+// Thread-safe session operations
+extern void ashell_session_switch(const void* session_id);
+extern void ashell_session_close(const void* session_id);
+
+// Session maintenance
+extern void ashell_session_stats(ashell_session_stats_t* stats);
+extern int ashell_session_cleanup_stale(int max_age_seconds);
+extern int ashell_session_validate(void);
