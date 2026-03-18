@@ -167,3 +167,72 @@ extern void ashell_env_print(void);
 // Environment constants
 #define ASHELL_PREFIX_ENV_VAR   "ASHELL_PREFIX"
 #define ASHELL_CONFIG_ENV_VAR   "ASHELL_CONFIG"
+
+// ============================================================================
+// COMMAND REGISTRATION API (M1-I3: Runtime command registration)
+// ============================================================================
+
+// Command function type: int func(int argc, char** argv)
+typedef int (*ashell_command_func_t)(int argc, char** argv);
+
+// Command information structure
+typedef struct {
+    char name[256];           // Command name
+    char entry_point[256];    // Entry point function name
+    char type[16];            // "file", "directory", or "no"
+    bool is_dynamic;          // Loaded from dynamic library
+} ashell_command_info_t;
+
+// Registry statistics
+typedef struct {
+    int total_slots;          // Total capacity
+    int used_slots;           // Slots used (active + inactive)
+    int active_commands;        // Currently active commands
+    int dynamic_commands;     // Loaded from libraries
+} ashell_registry_stats_t;
+
+// Register a command with a direct function pointer
+// Returns 0 on success, -1 on error
+extern int ashell_register_command(const char* name,
+                                   const char* entry_point,
+                                   ashell_command_func_t func,
+                                   const char* type);
+
+// Register a command from a dynamic library
+// Loads the library and resolves the entry point
+extern int ashell_register_command_lib(const char* name,
+                                       const char* library_path,
+                                       const char* entry_point,
+                                       const char* type);
+
+// Unregister a command
+// Returns 0 on success, -1 if not found
+extern int ashell_unregister_command(const char* name);
+
+// Replace a command (legacy compatibility, calls register)
+extern void ashell_replace_command(const char* name,
+                                   const char* entry_point,
+                                   ashell_command_func_t func,
+                                   const char* type);
+
+// Check if a command is registered
+extern bool ashell_command_exists(const char* name);
+
+// Get command information
+// Returns 0 on success, -1 if not found
+extern int ashell_get_command_info(const char* name, ashell_command_info_t* info);
+
+// Execute a registered command
+// Returns command's exit code, or -1 if not found
+extern int ashell_execute_command(const char* name, int argc, char** argv);
+
+// List all registered commands
+// Returns count, fills names array (caller must free strings)
+extern int ashell_list_commands(char** names, int max_commands);
+extern void ashell_free_command_list(char** names, int count);
+
+// Clear all dynamically loaded commands
+extern void ashell_clear_dynamic_commands(void);
+
+// Get registry statistics
+extern void ashell_get_registry_stats(ashell_registry_stats_t* stats);
