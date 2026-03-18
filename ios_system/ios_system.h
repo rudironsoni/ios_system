@@ -133,3 +133,37 @@ extern void ashell_trace_disable_category(const char* category);
 #define ASHELL_TRACE_CAT_SESSIONS   "sessions"
 #define ASHELL_TRACE_CAT_IO         "io"
 #define ASHELL_TRACE_CAT_ENV        "environment"
+
+// ============================================================================
+// ENVIRONMENT MANAGEMENT (M1-I2: Standardized environment initialization)
+// ============================================================================
+
+// Initialize the standardized a-Shell environment
+// Must be called once at app startup before any commands run
+extern void ashell_env_initialize(void);
+
+// Check if environment has been initialized
+extern int ashell_env_is_initialized(void);
+
+// Get the PREFIX path (e.g., ~/Library/ashell)
+extern const char* ashell_env_get_prefix(void);
+
+// Get the CONFIG path (e.g., ~/Documents/.ashell)
+extern const char* ashell_env_get_config(void);
+
+// PATH manipulation
+// Get PATH as an array of strings (caller must free with ashell_env_free_path_array)
+extern char** ashell_env_get_path_array(int* count);
+extern void ashell_env_free_path_array(char** paths);
+
+// Modify PATH (thread-safe)
+extern int ashell_env_path_append(const char* directory);   // Add to end (lower priority)
+extern int ashell_env_path_prepend(const char* directory);   // Add to start (higher priority)
+extern int ashell_env_path_remove(const char* directory);    // Remove from PATH
+
+// Print environment info (for debugging)
+extern void ashell_env_print(void);
+
+// Environment constants
+#define ASHELL_PREFIX_ENV_VAR   "ASHELL_PREFIX"
+#define ASHELL_CONFIG_ENV_VAR   "ASHELL_CONFIG"

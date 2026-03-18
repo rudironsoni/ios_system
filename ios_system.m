@@ -752,6 +752,9 @@ void initializeEnvironment(void) {
                     @"xetex", @"xelatex", @"dvipdfmx", @"xdvipdfmx",
         @"amstexA", @"cslatexA", @"csplainA", @"eplainA", @"etexA", @"jadetexA", @"latexA", @"mexA", @"mllatexA", @"mltexA", @"pdfsclatexA", @"pdfcsplainA", @"pdfetexA", @"pdfjadetexA", @"pdflatexA", @"pdfmexA", @"pdftexA", @"pdfxmltexA", @"texA", @"texsisA", @"utf8mexA", @"xmltexA", @"texluaA", @"texluacA", @"dvilualatexA", @"dviluatexA", @"lualatexA", @"luatexA", @"luahbtexA", @"mptopdfA", @"optexA",
                     @"xetexA", @"xelatexA",  @"dvipdfmxA", @"xdvipdfmxA"];
+
+    // Initialize standardized a-Shell environment (M1-I2)
+    ashell_env_initialize();
 }
 
 NSString * pathJoin(NSString * segmentA, NSString * segmentB);
