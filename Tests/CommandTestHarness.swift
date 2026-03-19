@@ -218,6 +218,18 @@ public actor CommandTestHarness {
         guard let value = ios_getenv(name) else { return nil }
         return String(cString: value)
     }
+
+    /// Close a session and clean up its resources
+    public func closeSession(_ sessionId: String) {
+        // Close the session - ios_system will clean up resources
+        ios_closeSession(UnsafeRawPointer(sessionId as CFString))
+
+        // If we closed the current session, switch to a default session
+        if self.sessionId == sessionId {
+            self.sessionId = "default"
+            ios_switchSession(UnsafeRawPointer("default" as CFString))
+        }
+    }
 }
 
 // MARK: - Test Fixtures
