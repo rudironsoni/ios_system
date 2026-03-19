@@ -238,6 +238,59 @@ extern void ashell_clear_dynamic_commands(void);
 extern void ashell_get_registry_stats(ashell_registry_stats_t* stats);
 
 // ============================================================================
+// SYSTEM INFO API (M4-I1: Library APIs for system info)
+// ============================================================================
+
+// System information structure (replaces /proc/cpuinfo, /proc/meminfo)
+typedef struct {
+    uint64_t total_ram;           // Total physical RAM
+    uint64_t available_ram;       // Available/free RAM
+    uint32_t cpu_count;           // Number of CPU cores
+    char cpu_arch[16];            // CPU architecture (e.g., "arm64")
+    char os_version[32];          // iOS version string
+} ios_sys_info_t;
+
+// Process information structure (replaces /proc/PID/)
+typedef struct {
+    pid_t pid;                    // Process ID
+    pid_t ppid;                   // Parent process ID
+    uid_t uid;                    // User ID
+    gid_t gid;                    // Group ID
+    char name[256];               // Process name
+    uint64_t memory_usage;        // Resident memory in bytes
+} ios_proc_info_t;
+
+// Get system information
+// Thread-safe, cached for 5 seconds
+extern ios_sys_info_t ios_getsys_info(void);
+
+// Format system info as string (caller must free)
+extern char* ios_sysinfo_format(const ios_sys_info_t* info);
+
+// Print system info to stdout
+extern void ios_print_sysinfo(void);
+
+// Get process information for a specific PID
+// Returns allocated struct (caller must free with ios_freeproc_info), or NULL
+extern ios_proc_info_t* ios_getproc_info(pid_t pid);
+
+// Free process info returned by ios_getproc_info
+extern void ios_freeproc_info(ios_proc_info_t* info);
+
+// Get current process info
+extern ios_proc_info_t* ios_getproc_self(void);
+
+// List all running processes
+// Returns array of PIDs (caller must free), sets count
+extern pid_t* ios_list_processes(int* count);
+
+// Format process info as string (caller must free)
+extern char* ios_procinfo_format(const ios_proc_info_t* info);
+
+// Print process info to stdout
+extern void ios_print_procinfo(pid_t pid);
+
+// ============================================================================
 // SESSION MANAGEMENT (M1-I4: Thread-safe session management)
 // ============================================================================
 
